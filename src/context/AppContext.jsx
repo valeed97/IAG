@@ -19,6 +19,7 @@ export const AppProvider = ({ children }) => {
   }
 
   useEffect(()=>{
+    console.log("defaultSuggestions", defaultSuggestions)
     const recommended = defaultSuggestions.filter(suggestion => suggestion.recommended);
     setDefaultRecommendedSuggestions(recommended)
   },[defaultSuggestions]);

@@ -2,14 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import useAxios from "hooks/useAxios";
 import { techAreas } from "JSONs/techAreas";
+import Breadcrumb from "components/Breadcrumb/Breadcrumb";
+import Result from "components/Result/Result";
+import { FinalresultValues } from "JSONs/Finalresult";
+import { useApp } from "context/AppContext";
 
 const AITechEnablement = () => {
-  const { postCall } = useAxios()
+  const { postCall } = useAxios();
+  const { handleResultValues } = useApp();
   const [currentArea, setCurrentArea] = useState(0);
   const [answers, setAnswers] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [techEnablementAreas, setTechEnablementAreas] = useState([]);
+  const [showResult, setShowResult] = useState(false)
 
   const handleSelectChange = (assessmentIndex, questionId, value) => {
     setAnswers(prev => ({
@@ -26,6 +32,14 @@ const AITechEnablement = () => {
     setIsSubmitting(true);
     await new Promise(resolve => setTimeout(resolve, 2000));
     console.log('Submitted answers:', answers);
+    setShowResult(true);
+    const result = await postCall("process-messages", {answers:answers});
+      if(result.success){
+        handleResultValues(FinalresultValues)
+        setShowResult(true)
+      } else {
+
+      }
     setIsSubmitting(false);
     setIsSubmitted(true);
   };
@@ -38,125 +52,133 @@ const AITechEnablement = () => {
     const canSubmit = currentArea === (techEnablementAreas.length - 1) && isCurrentAssessmentComplete();
 
   useEffect(() => {
-    setTechEnablementAreas(techAreas);
-    // const result = await postCall("fetch-tech-enablements", {}, {});
-    // if (result.success) {
-    //     setTechEnablementAreas(result.data);
-    // }else{
+    postCall("fetch-tech-enablements", {}, {}).then((result) => {
+      if (result.success) {
+        setTechEnablementAreas(techAreas);
+      }else{
 
-    // }
+      }
+    });
+    
   }, [techAreas]);
 
   if (techEnablementAreas.length === 0) {
     return <div>Loading...</div>;
   }
   return (
-    <div className="container mx-auto p-4 bg-white min-h-screen flex items-center justify-center">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="w-full max-w-3xl"
-      >
-        <div className="bg-white shadow-xl rounded-lg overflow-hidden">
-          <div className="bg-primary text-white p-4">
-            <h2 className="text-xl font-bold">{techEnablementAreas[currentArea]?.title}</h2>
-            <p className="text-sm text-light-gray">
-              Step {currentArea + 1} of {techEnablementAreas.length}
-            </p>
-          </div>
-          <div className="p-4">
-            <div className="grid grid-cols-3 gap-2 mb-4">
-              {techEnablementAreas[currentArea]?.defaultInfo.map((item, index) => (
-                <motion.div 
-                  key={index}
-                  className="bg-light-gray p-2 rounded-md shadow-sm"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 * index, duration: 0.5 }}
-                >
-                  <div className="flex items-center mb-1">
-                    <span className="mr-1 text-lg">{item.icon}</span>
-                    <h4 className="font-semibold text-sm text-primary">{item.title}</h4>
-                  </div>
-                  <div className="flex flex-wrap gap-1">
-                    {item.options.map((option, optIndex) => (
-                      <span key={optIndex} className="bg-white px-1 py-0.5 rounded text-xs text-primary">
-                        {option}
-                      </span>
-                    ))}
-                  </div>
-                </motion.div>
-              ))}
+    <>
+      <Breadcrumb pageName="AI Tech Enablement"/>
+      {!showResult ? (
+        <div className="container mx-auto p-4 min-h-screen flex items-center justify-center">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="w-full"
+        >
+          <div className="bg-white shadow-xl rounded-lg overflow-hidden">
+            <div className="bg-primary text-white p-4">
+              <h2 className="text-xl font-bold">{techEnablementAreas[currentArea]?.title}</h2>
+              <p className="text-sm text-light-gray">
+                Step {currentArea + 1} of {techEnablementAreas.length}
+              </p>
             </div>
-            
-            <h3 className="font-semibold text-md text-primary mb-3">Reasoning statements</h3>
-            
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentArea}
-                initial={{ opacity: 0, x: 50 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -50 }}
-                transition={{ duration: 0.3 }}
-              >
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  {techEnablementAreas[currentArea]?.questions.map((question, index) => (
-                    <motion.div 
-                      key={question.id} 
-                      className="space-y-1"
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.1 * index, duration: 0.5 }}
-                    >
-                      <label htmlFor={question.id} className="block text-sm font-medium text-dusky-teal">{question.label}</label>
-                      <select 
-                        id={question.id}
-                        onChange={(e) => handleSelectChange(currentArea, question.id, e.target.value)}
-                        className="w-full p-2 text-sm text-left shadow-sm bg-white border border-primary rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
+            <div className="p-4">
+              <div className="grid grid-cols-3 gap-2 mb-4">
+                {techEnablementAreas[currentArea]?.defaultInfo.map((item, index) => (
+                  <motion.div 
+                    key={index}
+                    className="bg-light-gray p-2 rounded-md shadow-sm"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 * index, duration: 0.5 }}
+                  >
+                    <div className="flex items-center mb-1">
+                      <span className="mr-1 text-lg">{item.icon}</span>
+                      <h4 className="font-semibold text-sm text-primary">{item.title}</h4>
+                    </div>
+                    <div className="flex flex-wrap gap-1">
+                      {item.options.map((option, optIndex) => (
+                        <span key={optIndex} className="bg-white px-1 py-0.5 rounded text-xs text-primary">
+                          {option}
+                        </span>
+                      ))}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+              
+              <h3 className="font-semibold text-md text-primary mb-3">Reasoning statements</h3>
+              
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentArea}
+                  initial={{ opacity: 0, x: 50 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -50 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    {techEnablementAreas[currentArea]?.questions.map((question, index) => (
+                      <motion.div 
+                        key={question.id} 
+                        className="space-y-1"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 * index, duration: 0.5 }}
                       >
-                        <option value="">Select an option</option>
-                        {question.options.map((option) => (
-                          <option key={option.value} value={option.value}>
-                            {option.label}
-                          </option>
-                        ))}
-                      </select>
-                    </motion.div>
-                  ))}
-                </form>
-              </motion.div>
-            </AnimatePresence>
-          </div>
-          <div className="bg-light-gray px-4 py-3 flex justify-between">
-            <button 
-              onClick={() => setCurrentArea(prev => prev - 1)}
-              disabled={currentArea === 0}
-              className="bg-white text-primary hover:bg-warm-red hover:text-white px-3 py-1 rounded text-sm disabled:opacity-50 disabled:hover:bg-white disabled:hover:text-primary"
-            >
-              ← Previous
-            </button>
-            {canSubmit ? (
+                        <label htmlFor={question.id} className="block text-sm font-medium text-dusky-teal">{question.label}</label>
+                        <select 
+                          id={question.id}
+                          onChange={(e) => handleSelectChange(currentArea, question.id, e.target.value)}
+                          className="w-full p-2 text-sm text-left shadow-sm bg-white border border-primary rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
+                        >
+                          <option value="">Select an option</option>
+                          {question.options.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
+                      </motion.div>
+                    ))}
+                  </form>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+            <div className="bg-light-gray px-4 py-3 flex justify-between">
               <button 
-                onClick={handleSubmit} 
-                className="bg-primary text-white hover:bg-warm-red px-3 py-1 rounded text-sm disabled:opacity-50"
-                disabled={isSubmitting || isSubmitted}
+                onClick={() => setCurrentArea(prev => prev - 1)}
+                disabled={currentArea === 0}
+                className="bg-white text-primary hover:bg-warm-red hover:text-white px-3 py-1 rounded text-sm disabled:opacity-50 disabled:hover:bg-white disabled:hover:text-primary"
               >
-                {isSubmitting ? 'Submitting...' : isSubmitted ? 'Submitted' : 'Submit'}
+                ← Previous
               </button>
-            ) : (
-              <button 
-                onClick={() => setCurrentArea(prev => prev + 1)}
-                disabled={!canProceed}
-                className="bg-primary text-white hover:bg-warm-red px-3 py-1 rounded text-sm disabled:opacity-50"
-              >
-                Next →
-              </button>
-            )}
+              {canSubmit ? (
+                <button 
+                  onClick={handleSubmit} 
+                  className="bg-primary text-white hover:bg-warm-red px-3 py-1 rounded text-sm disabled:opacity-50"
+                  disabled={isSubmitting || isSubmitted}
+                >
+                  {isSubmitting ? 'Submitting...' : isSubmitted ? 'Submitted' : 'Submit'}
+                </button>
+              ) : (
+                <button 
+                  onClick={() => setCurrentArea(prev => prev + 1)}
+                  disabled={!canProceed}
+                  className="bg-primary text-white hover:bg-warm-red px-3 py-1 rounded text-sm disabled:opacity-50"
+                >
+                  Next →
+                </button>
+              )}
+            </div>
           </div>
-        </div>
-      </motion.div>
-    </div>
+        </motion.div>
+      </div>
+      ): <Result step={3}/>
+      }
+    </>
+    
   );
 };
 

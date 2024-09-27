@@ -1,5 +1,5 @@
 import React from "react";
-import { Calendar, Eye, Shield, Sliders, AlertTriangle } from 'lucide-react';
+import { Calendar, Eye, Shield, Sliders, AlertTriangle , LayoutTemplate, Repeat, MessageSquare} from 'lucide-react';
 
 function ResultCard({ currentArea, step }) {
   
@@ -29,8 +29,10 @@ function ResultCard({ currentArea, step }) {
 
       {/* Body */}
       <div className="p-6 bg-white">
-        {step === 2 && (
+        {step > 1 && (
           <>
+            {step >= 2 && 
+            <>
             <div className="grid grid-cols-2 gap-4 mb-4">
               <div>
                 <h4 className="text-sm font-semibold text-dusky-teal mb-2">
@@ -103,9 +105,34 @@ function ResultCard({ currentArea, step }) {
                 </span>
               </div>
             </div>
+            </>
+          }
+            {step > 2 &&
+              <div className="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                  <h4 className="text-sm font-semibold text-dusky-teal mb-2">
+                    Suggested Route:
+                  </h4>
+                  <span className="px-2 py-1 bg-primary text-light-gray rounded-full text-xs">
+                    <LayoutTemplate className="w-3 h-3 inline mr-1" />
+                    {currentArea.suggestedRoute}
+                  </span>
+                </div>
+                <div>
+                  <h4 className="text-sm font-semibold text-dusky-teal mb-2">
+                    Suggested Reuse:
+                  </h4>
+                  <span className="px-2 py-1 bg-primary text-light-gray rounded-full text-xs">
+                    <Repeat className="w-3 h-3 inline mr-1" />
+                    {currentArea.suggestedReuse}
+                  </span>
+                </div>
+              </div>
+            }
           </>
         )}
-        <div>
+
+        {step >= 1 && <div>
           <h4 className="text-sm font-semibold text-dusky-teal mb-2">
             Opportunities:
           </h4>
@@ -114,7 +141,26 @@ function ResultCard({ currentArea, step }) {
               <li key={index}>{opportunity}</li>
             ))}
           </ul>
-        </div>
+        </div>}
+        {step === 3 && (
+            
+              <div className="mt-4">
+              <h4 className="text-sm font-semibold text-dusky-teal mb-2">
+                Reasoning:
+              </h4>
+              <div className="bg-light-gray p-3 rounded-md">
+                <ul className="space-y-2">
+                  {currentArea.reasoning.map((statement, index) => (
+                    <li key={index} className="flex items-start">
+                      <MessageSquare className="w-4 h-4 mr-2 text-primary flex-shrink-0 mt-1" />
+                      <span className="text-sm text-primary">{statement}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+          )}
       </div>
     </div>
  

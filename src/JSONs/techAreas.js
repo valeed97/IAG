@@ -1,6 +1,6 @@
 export const techAreas = [
         {
-          title: "Data Assessment",
+          title: "Operational Efficiency",
           defaultInfo: [
             { icon: '📊', title: 'Type Of Use', options: ['Everyday', 'Augment', 'Transform'] },
             { icon: '🧹', title: 'Type Of App', options: ['Content', 'Delivery', 'Triage', 'End to End Decisions'] },
@@ -53,7 +53,7 @@ export const techAreas = [
           ],
         },
         {
-            title: "Data Assessment",
+            title: "Customer Value",
             defaultInfo: [
               { icon: '📊', title: 'Type Of Use', options: ['Everyday', 'Augment', 'Transform'] },
               { icon: '🧹', title: 'Type Of App', options: ['Content', 'Delivery', 'Triage', 'End to End Decisions'] },
@@ -106,7 +106,7 @@ export const techAreas = [
             ],
           },
           {
-            title: "Data Assessment",
+            title: "Competitive Advantage",
             defaultInfo: [
               { icon: '📊', title: 'Type Of Use', options: ['Everyday', 'Augment', 'Transform'] },
               { icon: '🧹', title: 'Type Of App', options: ['Content', 'Delivery', 'Triage', 'End to End Decisions'] },
@@ -159,7 +159,7 @@ export const techAreas = [
             ],
           },
           {
-            title: "Data Assessment",
+            title: "Innovation",
             defaultInfo: [
               { icon: '📊', title: 'Type Of Use', options: ['Everyday', 'Augment', 'Transform'] },
               { icon: '🧹', title: 'Type Of App', options: ['Content', 'Delivery', 'Triage', 'End to End Decisions'] },
@@ -212,7 +212,7 @@ export const techAreas = [
             ],
           },
           {
-            title: "Data Assessment",
+            title: "Market Share",
             defaultInfo: [
               { icon: '📊', title: 'Type Of Use', options: ['Everyday', 'Augment', 'Transform'] },
               { icon: '🧹', title: 'Type Of App', options: ['Content', 'Delivery', 'Triage', 'End to End Decisions'] },

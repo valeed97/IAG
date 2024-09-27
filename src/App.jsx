@@ -3,10 +3,12 @@ import { Route, Routes, useLocation } from 'react-router-dom';
 import { AppProvider } from "context/AppContext"
 import Loader from 'common/Loader';
 import DefaultLayout from 'layout/DefaultLayout';
-import Form from "Pages/Form"
+import BusinessContext from "Pages/BusinessContext"
 import LinkedAIValue from 'Pages/LinkedAIValue';
 import AITechEnablement from 'Pages/AITechEnablement';
-import Result from "components/Result/Result";
+import AIResponsibleUse from 'Pages/AIResponsibleUse';
+import Test from 'Pages/Test'
+
 import './App.css';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -32,7 +34,7 @@ function App() {
           <Route
             index
             element={
-                <Form/>
+                <BusinessContext/>
             }
           />
           <Route
@@ -44,13 +46,19 @@ function App() {
           <Route
             path="ai-responsible-use"
             element={
-                <Result step={2}/>
+                <AIResponsibleUse/>
             }
           />
           <Route
             path="ai-tech-enablement"
             element={
                 <AITechEnablement/>
+            }
+          />
+           <Route
+            path="test"
+            element={
+                <Test/>
             }
           />
         </Routes>

@@ -123,7 +123,7 @@ const LinkedAIValue = () => {
 
   return (
     <>
-      <Breadcrumb pageName="Business Context" />
+      <Breadcrumb pageName="Linked AI Value" />
 
       {!showResult ? <div className="flex flex-col h-screen bg-white p-4">
         <div className="bg-gray-800 pb-4 border-b border-gray-700">

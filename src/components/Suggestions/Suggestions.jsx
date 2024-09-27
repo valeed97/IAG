@@ -1,7 +1,6 @@
 import React , {useState, useEffect} from 'react';
 import { Star} from "lucide-react";
 import { useApp } from "context/AppContext"
-// import { defaultSuggestions } from "JSONs/recommendations"
 
 const Suggestions = ({ setSelectedMsg }) => {
 
