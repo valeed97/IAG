@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
-import Header from '../components/Header/Index';
-import Sidebar from '../components/SideBar/Index';
+import { ToastContainer } from 'react-toastify';
+import Header from 'components/Header/Index';
+import Sidebar from 'components/SideBar/Index';
+
+
 
 const DefaultLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -21,7 +24,7 @@ const DefaultLayout = ({ children }) => {
 
           {/* <!-- ===== Main Content Start ===== --> */}
           <main>
-            <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10 pb-0">
+            <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10 pb-0 2xl:pb-0">
               {children}
             </div>
           </main>
@@ -30,6 +33,7 @@ const DefaultLayout = ({ children }) => {
         {/* <!-- ===== Content Area End ===== --> */}
       </div>
       {/* <!-- ===== Page Wrapper End ===== --> */}
+      <ToastContainer />
     </div>
   );
 };

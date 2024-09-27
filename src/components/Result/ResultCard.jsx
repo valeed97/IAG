@@ -2,8 +2,7 @@ import React from "react";
 import { Calendar, Eye, Shield, Sliders, AlertTriangle } from 'lucide-react';
 
 function ResultCard({ currentArea, step }) {
-  const IconComponent = currentArea.icon;
-
+  
   const riskColor = (rating) => {
     const colors = [
       "bg-green-500",
@@ -21,7 +20,8 @@ function ResultCard({ currentArea, step }) {
       <div className="p-4 bg-primary">
         <div className="flex items-center">
           <div className="w-12 h-12 bg-light-gray bg-opacity-20 rounded-full flex items-center justify-center mr-4">
-            <IconComponent className="w-6 h-6 text-light-gray" />
+            {/* <IconComponent className="w-6 h-6 text-light-gray" /> */}
+               <span className="text-2xl font-bold text-light-gray">{currentArea.name.charAt(0)}</span>
           </div>
           <h2 className="text-2xl font-bold text-light-gray">{currentArea.name}</h2>
         </div>
@@ -117,6 +117,7 @@ function ResultCard({ currentArea, step }) {
         </div>
       </div>
     </div>
+ 
   );
 }
 
