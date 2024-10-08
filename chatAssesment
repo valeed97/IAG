@@ -1,0 +1,397 @@
+import React, { useState, useEffect } from 'react';
+import { ChevronRight, ChevronLeft } from 'lucide-react';
+
+const assessmentData = [
+  {
+    "title": "Operational Efficiency",
+    "defaultInfo": [
+      { "icon": "📊", "title": "Type Of Use", "options": [{"value": "Everyday", "selected":true}, {"value": "Augment", "selected":false}, {"value": "Transform", "selected":false}] },
+      { "icon": "🧹", "title": "Type Of App", "options": [{"value": "Content", "selected":false}, {"value": "Delivery", "selected":false}, {"value": "Triage", "selected":true}] },
+      { "icon": "🔒", "title": "Quadrant Mapping", "options": [{"value": "Quadrant-1", "selected":false}, {"value": "Quadrant-2", "selected":true}, {"value": "Quadrant-3", "selected": false}] }
+    ],
+    "questions": [
+      {
+        "id": "dataVolume",
+        "label": "What do you think is the volume of data the organization has available for this application?",
+        "options": [
+          { "value": "extensive", "label": "Extensive data (petabytes or more)" },
+          { "value": "large", "label": "Large data volume (terabytes)" },
+          { "value": "moderate", "label": "Moderate data volume (gigabytes)" },
+          { "value": "small", "label": "Small but manageable data volume (megabytes)" },
+          { "value": "limited", "label": "Limited data availability (kilobytes or less)" }
+        ]
+      },
+      {
+        "id": "dataQuality",
+        "label": "What do you think is the quality of data the organization has available?",
+        "options": [
+          { "value": "high", "label": "High quality, well-curated data" },
+          { "value": "good", "label": "Good quality with minor inconsistencies" },
+          { "value": "average", "label": "Average quality, requires some cleaning" },
+          { "value": "low", "label": "Poor quality, significant preprocessing needed" }
+        ]
+      },
+      {
+        "id": "dataSensitivity",
+        "label": "What do you think is the sensitivity of the data that will be used?",
+        "options": [
+          { "value": "high", "label": " Highly sensitive (e.g., personally identifiable information)" },
+          { "value": "good", "label": "Generally sensitive (e.g., financial records)" },
+          { "value": "average", "label": "Moderately sensitive(e.g., internal business documents)" },
+          { "value": "low", "label": "Low sensitive (e.g., public-facing content)" },
+          { "value": "not", "label": "Not sensitive (e.g., anonymized or aggregated data)" }
+        ]
+      },
+      {
+        "id": "accuracyTolerance",
+        "label": "What is the accuracy tolerance for the application's output for this use case?",
+        "options": [
+          { "value": "high", "label": "Zero tolerance for errors (critical systems)" },
+          { "value": "good", "label": "Very high accuracy required (above 95%)" },
+          { "value": "average", "label": "Moderate accuracy required (80-95%)" },
+          { "value": "low", "label": "Some tolerance for inaccuracies (60-80%)" },
+          { "value": "not", "label": "High tolerance for inaccuracies (below 60%)" }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Customer value",
+    "defaultInfo": [
+      { "icon": "📊", "title": "Type Of Use", "options": [{"value": "Everyday", "selected":true}, {"value": "Augment", "selected":false}, {"value": "Transform", "selected":false}] },
+      { "icon": "🧹", "title": "Type Of App", "options": [{"value": "Content", "selected":false}, {"value": "Delivery", "selected":false}, {"value": "Triage", "selected":true}] },
+      { "icon": "🔒", "title": "Quadrant Mapping", "options": [{"value": "Quadrant-1", "selected":false}, {"value": "Quadrant-2", "selected":true}, {"value": "Quadrant-3", "selected": false}] }
+    ],
+    "questions": [
+      {
+        "id": "dataVolume",
+        "label": "What do you think is the volume of data the organization has available for this application?",
+        "options": [
+          { "value": "extensive", "label": "Extensive data (petabytes or more)" },
+          { "value": "large", "label": "Large data volume (terabytes)" },
+          { "value": "moderate", "label": "Moderate data volume (gigabytes)" },
+          { "value": "small", "label": "Small but manageable data volume (megabytes)" },
+          { "value": "limited", "label": "Limited data availability (kilobytes or less)" }
+        ]
+      },
+      {
+        "id": "dataQuality",
+        "label": "What do you think is the quality of data the organization has available?",
+        "options": [
+          { "value": "high", "label": "High quality, well-curated data" },
+          { "value": "good", "label": "Good quality with minor inconsistencies" },
+          { "value": "average", "label": "Average quality, requires some cleaning" },
+          { "value": "low", "label": "Poor quality, significant preprocessing needed" }
+        ]
+      },
+      {
+        "id": "dataSensitivity",
+        "label": "What do you think is the sensitivity of the data that will be used?",
+        "options": [
+          { "value": "high", "label": " Highly sensitive (e.g., personally identifiable information)" },
+          { "value": "good", "label": "Generally sensitive (e.g., financial records)" },
+          { "value": "average", "label": "Moderately sensitive(e.g., internal business documents)" },
+          { "value": "low", "label": "Low sensitive (e.g., public-facing content)" },
+          { "value": "not", "label": "Not sensitive (e.g., anonymized or aggregated data)" }
+        ]
+      },
+      {
+        "id": "accuracyTolerance",
+        "label": "What is the accuracy tolerance for the application's output for this use case?",
+        "options": [
+          { "value": "high", "label": "Zero tolerance for errors (critical systems)" },
+          { "value": "good", "label": "Very high accuracy required (above 95%)" },
+          { "value": "average", "label": "Moderate accuracy required (80-95%)" },
+          { "value": "low", "label": "Some tolerance for inaccuracies (60-80%)" },
+          { "value": "not", "label": "High tolerance for inaccuracies (below 60%)" }
+        ]
+      }
+    ]
+  }
+];
+
+const AITechEnablementAssessment = () => {
+  const [currentSection, setCurrentSection] = useState(0);
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [answers, setAnswers] = useState({});
+  const [messages, setMessages] = useState([]);
+
+  useEffect(() => {
+    initializeSection();
+  }, [currentSection]);
+
+  const initializeSection = () => {
+    const section = assessmentData[currentSection];
+    setMessages([
+      { type: 'bot', content: `Let's discuss ${section.title}.` },
+      { type: 'bot', content: section.questions[0].label },
+      { type: 'user', content: 'options', options: section.questions[0].options }
+    ]);
+    setCurrentQuestion(0);
+  };
+
+  const handleAnswer = (selectedOption) => {
+    const section = assessmentData[currentSection];
+    const question = section.questions[currentQuestion];
+
+    setAnswers({
+      ...answers,
+      [section.title]: {
+        ...answers[section.title],
+        [question.id]: selectedOption
+      }
+    });
+
+    const updatedMessages = [
+      ...messages,
+      { type: 'user', content: selectedOption.label }
+    ];
+
+    if (currentQuestion < section.questions.length - 1) {
+      const nextQuestion = currentQuestion + 1;
+      setCurrentQuestion(nextQuestion);
+      updatedMessages.push(
+        { type: 'bot', content: section.questions[nextQuestion].label },
+        { type: 'user', content: 'options', options: section.questions[nextQuestion].options }
+      );
+    } else if (currentSection < assessmentData.length - 1) {
+      updatedMessages.push({ type: 'bot', content: 'Great! Let\'s move on to the next section.' });
+    } else {
+      updatedMessages.push({ type: 'bot', content: 'Thank you for completing the assessment!' });
+    }
+
+    setMessages(updatedMessages);
+  };
+
+  const nextSection = () => {
+    if (currentSection < assessmentData.length - 1) {
+      setCurrentSection(currentSection + 1);
+    }
+  };
+
+  const prevSection = () => {
+    if (currentSection > 0) {
+      setCurrentSection(currentSection - 1);
+    }
+  };
+
+  const renderDefaultInfo = () => {
+    const section = assessmentData[currentSection];
+    return (
+      <div className="grid grid-cols-3 gap-4 p-4 bg-white">
+        {section.defaultInfo.map((info, index) => (
+          <div key={index} className="border rounded p-2">
+            <h2 className="font-bold">{info.icon} {info.title}</h2>
+            <div className="flex flex-wrap gap-2 mt-2">
+              {info.options.map((option, optIndex) => (
+                <span
+                  key={optIndex}
+                  className={`px-2 py-1 rounded text-sm ${
+                    option.selected ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'
+                  }`}
+                >
+                  {option.value}
+                </span>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  return (
+    <div className="flex flex-col h-screen bg-gray-100">
+      <div className="bg-purple-700 text-white p-4">
+        <h1 className="text-xl font-bold">AI Tech Enablement</h1>
+        <p className="text-sm">{assessmentData[currentSection].title}</p>
+        <p className="text-xs">Step {currentSection + 1} of {assessmentData.length}</p>
+      </div>
+
+      {renderDefaultInfo()}
+
+      <div className="flex-grow overflow-auto p-4 space-y-4">
+        {messages.map((message, index) => (
+          <div key={index} className={`flex ${message.type === 'bot' ? 'justify-start' : 'justify-end'}`}>
+            <div className={`max-w-3/4 p-3 rounded-lg ${message.type === 'bot' ? 'bg-white' : 'bg-purple-100'}`}>
+              {message.content === 'options' ? (
+                <div className="space-y-2">
+                  {message.options.map((option) => (
+                    <button
+                      key={option.value}
+                      onClick={() => handleAnswer(option)}
+                      className="w-full text-left p-2 rounded hover:bg-purple-200 transition-colors"
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                message.content
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="p-4 bg-white flex justify-between">
+        <button
+          onClick={prevSection}
+          disabled={currentSection === 0}
+          className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
+        >
+          <ChevronLeft className="inline-block mr-2" /> Previous
+        </button>
+        <button
+          onClick={nextSection}
+          disabled={currentSection === assessmentData.length - 1}
+          className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
+        >
+          Next <ChevronRight className="inline-block ml-2" />
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default AITechEnablementAssessment;
+
+// old
+import React, { useState, useEffect } from 'react';
+
+const questions = [
+  {
+    id: 'volume',
+    text: 'What do you think is the volume of data the organization has available for this application?',
+    options: ['Low', 'Medium', 'High']
+  },
+  {
+    id: 'quality',
+    text: 'What do you think is the quality of data the organization has available?',
+    options: ['Poor', 'Fair', 'Good', 'Excellent']
+  },
+  {
+    id: 'sensitivity',
+    text: 'What do you think is the sensitivity of the data that will be used?',
+    options: ['Low', 'Medium', 'High']
+  },
+  {
+    id: 'accuracy',
+    text: "What is the accuracy tolerance for the application's output for this use case?",
+    options: ['Low', 'Medium', 'High']
+  }
+];
+
+const AITechEnablementChat = () => {
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [answers, setAnswers] = useState({});
+  const [messages, setMessages] = useState([]);
+  const [selectedOption, setSelectedOption] = useState('');
+
+  useEffect(() => {
+    setMessages([
+      { type: 'bot', content: questions[0].text },
+      { type: 'user', content: 'options', options: questions[0].options }
+    ]);
+  }, []);
+
+  const handleAnswer = () => {
+    if (!selectedOption) return;
+
+    const updatedMessages = [
+      ...messages,
+      { type: 'user', content: selectedOption }
+    ];
+
+    setAnswers({ ...answers, [questions[currentQuestion].id]: selectedOption });
+    
+    if (currentQuestion < questions.length - 1) {
+      const nextQuestion = currentQuestion + 1;
+      setCurrentQuestion(nextQuestion);
+      updatedMessages.push(
+        { type: 'bot', content: questions[nextQuestion].text },
+        { type: 'user', content: 'options', options: questions[nextQuestion].options }
+      );
+    }
+
+    setMessages(updatedMessages);
+    setSelectedOption('');
+  };
+
+  return (
+    <div className="flex flex-col h-screen bg-gray-100">
+      <div className="bg-purple-700 text-white p-4">
+        <h1 className="text-xl font-bold">AI Tech Enablement</h1>
+        <p className="text-sm">Operational Efficiency</p>
+        <p className="text-xs">Step 1 of 5</p>
+      </div>
+      
+      <div className="grid grid-cols-3 gap-4 p-4 bg-white">
+        <div className="border rounded p-2">
+          <h2 className="font-bold">Type Of Use</h2>
+          <div className="flex space-x-2 mt-2">
+            <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-sm">Everyday</span>
+            <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded text-sm">Augment</span>
+            <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded text-sm">Transform</span>
+          </div>
+        </div>
+        <div className="border rounded p-2">
+          <h2 className="font-bold">Type Of App</h2>
+          <div className="flex space-x-2 mt-2">
+            <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded text-sm">Content</span>
+            <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded text-sm">Delivery</span>
+            <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-sm">Triage</span>
+          </div>
+        </div>
+        <div className="border rounded p-2">
+          <h2 className="font-bold">Quadrant Mapping</h2>
+          <div className="flex space-x-2 mt-2">
+            <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded text-sm">Quadrant-1</span>
+            <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-sm">Quadrant-2</span>
+            <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded text-sm">Quadrant-3</span>
+          </div>
+        </div>
+      </div>
+      
+      <div className="flex-grow overflow-auto p-4 space-y-4">
+        {messages.map((message, index) => (
+          <div key={index} className={`flex ${message.type === 'bot' ? 'justify-start' : 'justify-end'}`}>
+            <div className={`max-w-3/4 p-3 rounded-lg ${message.type === 'bot' ? 'bg-white' : 'bg-purple-100'}`}>
+              {message.content === 'options' ? (
+                <div className="space-y-2">
+                  {message.options.map((option) => (
+                    <label key={option} className="flex items-center space-x-2">
+                      <input
+                        type="radio"
+                        name={`question-${currentQuestion}`}
+                        value={option}
+                        checked={selectedOption === option}
+                        onChange={(e) => setSelectedOption(e.target.value)}
+                        className="form-radio text-purple-600"
+                      />
+                      <span>{option}</span>
+                    </label>
+                  ))}
+                </div>
+              ) : (
+                message.content
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+      
+      <div className="p-4 bg-white">
+        <button
+          onClick={handleAnswer}
+          disabled={!selectedOption}
+          className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
+        >
+          Submit Answer
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default AITechEnablementChat;
